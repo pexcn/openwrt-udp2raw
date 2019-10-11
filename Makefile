@@ -36,6 +36,10 @@ MAKE_FLAGS += cross2
 define Package/udp2raw/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/udp2raw_cross $(1)/usr/bin/udp2raw
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) files/udp2raw.init $(1)/etc/init.d/udp2raw
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_DATA) files/udp2raw.config $(1)/etc/config/udp2raw
 endef
 
 $(eval $(call BuildPackage,udp2raw))
