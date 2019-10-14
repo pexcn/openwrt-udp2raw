@@ -20,6 +20,19 @@ append_param() {
 	procd_append_param command "$switch" "${_loctmp:-$default}"
 }
 
+append_param_if_not_eq() {
+	local section="$1"
+	local option="$2"
+	local switch="$3"
+	local default="$4"
+	local _loctmp
+	config_get _loctmp "$section" "$option"
+	[ -n "$_loctmp" -o -n "$default" ] || return 0
+	[ "$_loctmp" != "$default" ] && {
+		procd_append_param command "$switch" "$_loctmp"
+	}
+}
+
 start_udp2raw() {
 	local enable
 	config_get_bool enable $1 enable
@@ -31,24 +44,33 @@ start_udp2raw() {
 	procd_set_param nice -5
 	procd_set_param limits nofile="65535 65535"
 
+	# set as udp2raw client
 	procd_set_param command /usr/bin/udp2raw
 	procd_append_param command "-c"
 
 	# common options
 	append_param $1 local_address "-l"
 	append_param $1 remote_address "-r"
-	append_param $1 raw_mode "--raw-mode"
-	append_param $1 key "--key"
-	append_param $1 cipher_mode "--cipher-mode"
-	append_param $1 auth_mode "--auth-mode"
+	append_param_if_not_eq $1 raw_mode "--raw-mode" "faketcp"
+	append_param_if_not_eq $1 key "--key" "secret key"
+	append_param_if_not_eq $1 cipher_mode "--cipher-mode" "aes128cbc"
+	append_param_if_not_eq $1 auth_mode "--auth-mode" "md5"
 	procd_append_param command "-a"
 
 	# other options
-	append_param $1 log_level "--log-level"
-	append_param $1 sock_buf "--sock-buf"
-	append_param $1 seq_mode "--seq-mode"
-	append_param $1 mtu_warn "--mtu-warn"
+	append_param_if_not_eq $1 log_level "--log-level" "4"
+	append_param_if_not_eq $1 sock_buf "--sock-buf" "1024"
+	append_param_if_not_eq $1 seq_mode "--seq-mode" "3"
+	append_param_if_not_eq $1 mtu_warn "--mtu-warn" "1375"
 	procd_append_param command "--wait-lock"
+
+	# handle hb mode
+	append_param_if_not_eq $1 hb_mode "--hb-mode" "1"
+	local hb_mode_tmp
+	config_get hb_mode_tmp "$1" "hb_mode" "1"
+	[ $hb_mode_tmp == "1" ] && {
+		append_param_if_not_eq $1 hb_len "--hb-len" "1200"
+	}
 
 	procd_close_instance
 }
