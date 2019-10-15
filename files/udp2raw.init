@@ -24,11 +24,11 @@ append_param_if_not_eq() {
 	local section="$1"
 	local option="$2"
 	local switch="$3"
-	local default="$4"
+	local compare="$4"
 	local _loctmp
 	config_get _loctmp "$section" "$option"
-	[ -n "$_loctmp" -o -n "$default" ] || return 0
-	[ "$_loctmp" != "$default" ] && {
+	[ -n "$_loctmp" ] || return 0
+	[ "$_loctmp" != "$compare" ] && {
 		procd_append_param command "$switch" "$_loctmp"
 	}
 }
@@ -68,7 +68,7 @@ start_udp2raw() {
 	append_param_if_not_eq $1 hb_mode "--hb-mode" "1"
 	local hb_mode_tmp
 	config_get hb_mode_tmp "$1" "hb_mode" "1"
-	[ $hb_mode_tmp == "1" ] && {
+	[ "$hb_mode_tmp" = "1" ] && {
 		append_param_if_not_eq $1 hb_len "--hb-len" "1200"
 	}
 
