@@ -45,7 +45,7 @@ define Package/udp2raw/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) files/udp2raw.init $(1)/etc/init.d/udp2raw
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) files/udp2raw.config $(1)/etc/config/udp2raw
+	$(INSTALL_CONF) files/udp2raw.config $(1)/etc/config/udp2raw
 endef
 
 $(eval $(call BuildPackage,udp2raw))
