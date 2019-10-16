@@ -28,6 +28,10 @@ A tunnel which turns UDP traffic into encrypted UDP/FakeTCP/ICMP traffic by usin
 helps you bypass UDP firewalls or unstable UDP Environment.
 endef
 
+define Package/udp2raw/conffiles
+/etc/config/udp2raw
+endef
+
 define Build/Configure
 	$(SED) 's/cc_cross=.*/cc_cross=$(TARGET_CXX)/g' $(PKG_BUILD_DIR)/makefile
 	$(SED) 's/\\".*shell git rev-parse HEAD.*\\"/\\"$(PKG_SOURCE_VERSION)\\"/g' $(PKG_BUILD_DIR)/makefile
