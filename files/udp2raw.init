@@ -44,9 +44,20 @@ start_udp2raw() {
 	procd_set_param nice -5
 	procd_set_param limits nofile="65535 65535"
 
-	# set as udp2raw client
 	procd_set_param command /usr/bin/udp2raw
-	procd_append_param command "-c"
+
+	# handle udp2raw mode
+	local mode_val
+	config_get mode_val $1 "mode" "client"
+	local mode_param
+	if [ "$mode_val" = "client" ]; then
+		mode_param="-c"
+	elif [ "$mode_val" = "server" ]; then
+		mode_param="-s"
+	else
+		mode_param="-c"
+	fi
+	procd_append_param command "$mode_param"
 
 	# common options
 	append_param $1 local_address "-l"
