@@ -46,7 +46,7 @@ start_udp2raw() {
 
 	procd_set_param command /usr/bin/udp2raw
 
-	# handle udp2raw mode
+	# running mode
 	local mode_val
 	config_get mode_val $1 "mode" "client"
 	local mode_param
@@ -70,12 +70,10 @@ start_udp2raw() {
 
 	# other options
 	append_param_if_not_eq $1 log_level "--log-level" "4"
-	append_param_if_not_eq $1 sock_buf "--sock-buf" "1024"
-	append_param_if_not_eq $1 seq_mode "--seq-mode" "3"
 	append_param_if_not_eq $1 mtu_warn "--mtu-warn" "1375"
 	procd_append_param command "--wait-lock"
 
-	# handle hb mode
+	# hb mode
 	append_param_if_not_eq $1 hb_mode "--hb-mode" "1"
 	local hb_mode_val
 	config_get hb_mode_val "$1" "hb_mode" "1"
