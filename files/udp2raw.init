@@ -76,7 +76,7 @@ start_udp2raw() {
 	append_param_if_neq $1 hb_mode "--hb-mode" "1"
 	local hb_mode_val
 	config_get_bool hb_mode_val $1 "hb_mode"
-	[ "$hb_mode_val" = 1 ] && {
+	[ "$hb_mode_val" = 1 -o -z "$hb_mode_val" ] && {
 		append_param_if_neq $1 hb_len "--hb-len" "1200"
 	}
 
